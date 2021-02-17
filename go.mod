@@ -1,4 +1,4 @@
-module github.com/lukefan6/virtual-file-system
+module virtual-file-system
 
 go 1.14
 
