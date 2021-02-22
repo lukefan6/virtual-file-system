@@ -11,6 +11,6 @@ type User struct {
 
 // NewUser creates a user with no folders created.
 func NewUser(name string) *User {
-	user := User{Name:name}
+	user := User{Name: name}
 	return &user
 }
