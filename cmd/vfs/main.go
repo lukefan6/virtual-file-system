@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"virtual-file-system/internal/pkg/models"
+	"virtual-file-system/internal/models"
 )
 
 func main() {
