@@ -7,7 +7,7 @@ import (
 
 func TestUserServiceImpl_Register(t *testing.T) {
 	type fields struct {
-		users []models.User
+		users map[string]models.User
 	}
 	type args struct {
 		name string
@@ -22,19 +22,27 @@ func TestUserServiceImpl_Register(t *testing.T) {
 		// TODO: Verify internal user storage after test execution.
 		{
 			name:    "01. it should add new user when the users are empty",
-			fields:  fields{[]models.User{}},
+			fields:  fields{map[string]models.User{}},
 			args:    args{"Luke"},
 			wantErr: false,
 		},
 		{
-			name:    "02. it should return error if a duplicated user name is given",
-			fields:  fields{[]models.User{{Name: "Luke"}}},
+			name: "02. it should return error if a duplicated user name is given",
+			fields: fields{
+				map[string]models.User{
+					"luke": {Name: "Luke"},
+				},
+			},
 			args:    args{"Luke"},
 			wantErr: true,
 		},
 		{
-			name:    "03. it should return error if the given user name exists using case-insensitive comparison",
-			fields:  fields{[]models.User{{Name: "Luke"}}},
+			name: "03. it should return error if the given user name exists using case-insensitive comparison",
+			fields: fields{
+				map[string]models.User{
+					"luke": {Name: "Luke"},
+				},
+			},
 			args:    args{"luke"},
 			wantErr: true,
 		},

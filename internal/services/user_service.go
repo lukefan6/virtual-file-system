@@ -19,7 +19,7 @@ type UserService interface {
 
 // UserServiceImpl is the implementation of the UserService interface
 type UserServiceImpl struct {
-	users []models.User
+	users map[string]models.User
 }
 
 // Register adds a user to the system.
@@ -29,18 +29,20 @@ func (service *UserServiceImpl) Register(name string) error {
 		return errors.New("user already exists")
 	}
 
-	service.users = append(service.users, models.User{Name: name})
+	key := service.makeKey(name)
+	service.users[key] = models.User{Name: name}
 	return nil
 }
 
 // Exists returns true if the given user name exists in the internal user storage.
 // The user name comparison is case insensitive
 func (service *UserServiceImpl) Exists(username string) bool {
-	for _, u := range service.users {
-		if strings.EqualFold(u.Name, username) {
-			return true
-		}
-	}
+	key := service.makeKey(username)
+	_, exists := service.users[key]
 
-	return false
+	return exists
+}
+
+func (service *UserServiceImpl) makeKey(username string) string {
+	return strings.ToLower(username)
 }
