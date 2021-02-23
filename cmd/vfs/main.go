@@ -10,7 +10,12 @@ func main() {
 	user := models.NewUser("Luke")
 	fmt.Println(user)
 
-	userService:=services.UserServiceImpl{}
-	err:=userService.Register("Luke")
+	userService := services.UserServiceImpl{}
+	err := userService.Register("Luke")
 	fmt.Println(err)
+	fmt.Println(userService)
+
+	err2 := userService.Register("Luke")
+	fmt.Println(err2)
+	fmt.Println(userService)
 }
