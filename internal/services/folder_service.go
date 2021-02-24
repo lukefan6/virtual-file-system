@@ -32,6 +32,10 @@ type FolderService interface {
 
 	// Exists returns true if the given folder id exists in the internal folder storage.
 	Exists(id int) bool
+
+	// Get returns the folder with given ID.
+	// If no such folder exists, an error is returned.
+	Get(id int) (*models.Folder, error)
 }
 
 // FolderServiceImpl is the implementation of the FolderService interface
@@ -58,8 +62,11 @@ func (service *FolderServiceImpl) Create(name string, createdBy string, desc str
 		ID:          key,
 		Name:        name,
 		Description: desc,
+		CreatedBy:   createdBy,
 		Files:       []models.File{},
 	}
+
+	service.folders[key] = *folder
 
 	return folder, nil
 }
@@ -68,6 +75,21 @@ func (service *FolderServiceImpl) Create(name string, createdBy string, desc str
 // If the given `deletedBy` does not match existing users in the system, an error is returned.
 // If the given id does not match existing folders in the system, an error is returned.
 func (service *FolderServiceImpl) Delete(id int, deletedBy string) error {
+	if !service.userService.Exists(deletedBy) {
+		return errors.New("user does not exist")
+	}
+
+	f, err := service.Get(id)
+	if err != nil {
+		return err
+	}
+
+	if !strings.EqualFold(f.CreatedBy, deletedBy) {
+		return errors.New("folder owner does not match")
+	}
+
+	delete(service.folders, id)
+
 	return nil
 }
 
@@ -88,7 +110,20 @@ func (service *FolderServiceImpl) Rename(id int, name string, renamedBy string) 
 
 // Exists returns true if the given folder id exists in the internal folder storage.
 func (service *FolderServiceImpl) Exists(id int) bool {
-	return false
+	_, exists := service.folders[id]
+
+	return exists
+}
+
+// Get returns the folder with given ID.
+// If no such folder exists, an error is returned.
+func (service *FolderServiceImpl) Get(id int) (*models.Folder, error) {
+	f, exists := service.folders[id]
+	if !exists {
+		return nil, errors.New("folder does not exist")
+	}
+
+	return &f, nil
 }
 
 func (service *FolderServiceImpl) makeNewKey() int {

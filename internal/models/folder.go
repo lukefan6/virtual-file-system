@@ -11,6 +11,9 @@ type Folder struct {
 	// Description of a folder is not a necessary field.
 	Description string
 
+	// CreatedBy is the user that created this folder.
+	CreatedBy string
+
 	// Files that were uploaded to this folder by a user.
 	Files []File
 }
