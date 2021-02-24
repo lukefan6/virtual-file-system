@@ -44,7 +44,6 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 				Name:        "Work",
 				Description: "The working files and necessary files are here",
 				CreatedBy:   "Luke",
-				Files:       []models.File{},
 			},
 			wantErr: false,
 		},
@@ -250,8 +249,8 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 				username: "Luke",
 			},
 			want: []models.Folder{
-				{Name: "Work", CreatedBy: "Luke"},
 				{Name: "Testing", CreatedBy: "Mark"},
+				{Name: "Work", CreatedBy: "Luke"},
 			},
 			wantErr: false,
 		},

@@ -65,7 +65,6 @@ func (service *FolderServiceImpl) Create(name string, createdBy string, desc str
 		Description: desc,
 		CreatedBy:   createdBy,
 		CreatedAt:   time.Now(),
-		Files:       []models.File{},
 	}
 
 	service.folders[key] = *folder
@@ -124,6 +123,10 @@ func (service *FolderServiceImpl) GetAll(username string, sortBy string, sortOrd
 			} else {
 				return true
 			}
+		})
+	} else {
+		sort.Slice(folders, func(i, j int) bool {
+			return folders[i].Name < folders[j].Name
 		})
 	}
 

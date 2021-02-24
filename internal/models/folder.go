@@ -18,7 +18,4 @@ type Folder struct {
 
 	// CreatedAt is the time this folder was created.
 	CreatedAt time.Time
-
-	// Files that were uploaded to this folder by a user.
-	Files []File
 }
