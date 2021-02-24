@@ -2,7 +2,9 @@ package services
 
 import (
 	"errors"
+	"path/filepath"
 	"sort"
+	"time"
 	"virtual-file-system/internal/models"
 )
 
@@ -23,12 +25,22 @@ type FileServiceImpl struct {
 // Upload creates the file under the folder with given ID.
 // An error will be returned if the folder or the user is not found on the system.
 func (service *FileServiceImpl) Upload(createdBy string, folderID int, filename string, desc string) error {
+	file := &models.File{
+		FolderID:  folderID,
+		Name:      filename,
+		Ext:       filepath.Ext(filename),
+		Desc:      desc,
+		CreatedAt: time.Now(),
+	}
+
+	service.files[filename] = *file
 	return nil
 }
 
 // Delete removes the specific file under the given folder.
 // An error will be returned if the folder or file or user is not found on the system.
 func (service *FileServiceImpl) Delete(deletedBy string, folderID int, filename string) error {
+	delete(service.files, filename)
 	return nil
 }
 

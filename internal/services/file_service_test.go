@@ -332,3 +332,102 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		})
 	}
 }
+
+func TestFileServiceImpl_Delete(t *testing.T) {
+	type fields struct {
+		folders map[int]models.Folder
+		users   map[string]models.User
+		files   map[string]models.File
+	}
+	type args struct {
+		deletedBy string
+		folderID  int
+		filename  string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "01. it should delete file without error.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
+			},
+			args: args{
+				deletedBy: "Luke",
+				folderID:  1001,
+				filename:  "1.tc",
+			},
+			wantErr: false,
+		},
+		{name: "02. it should return error if folder not found."},
+		{name: "03. it should return error if file not found."},
+		{name: "04. it should return error if user not found"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &FileServiceImpl{
+				files:         tt.fields.files,
+				userService:   &UserServiceImpl{users: tt.fields.users},
+				folderService: &FolderServiceImpl{folders: tt.fields.folders},
+			}
+			if err := service.Delete(tt.args.deletedBy, tt.args.folderID, tt.args.filename); (err != nil) != tt.wantErr {
+				t.Errorf("FileServiceImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestFileServiceImpl_Upload(t *testing.T) {
+	type fields struct {
+		folders map[int]models.Folder
+		users   map[string]models.User
+		files   map[string]models.File
+	}
+	type args struct {
+		createdBy string
+		folderID  int
+		filename  string
+		desc      string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "01. it should upload file without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{},
+			},
+			args: args{
+				createdBy: "Luke",
+				folderID:  1001,
+				filename:  "1.tc",
+				desc:      "first test case for a company",
+			},
+			wantErr: false,
+		},
+		{name: "02. it should return error if folder not found."},
+		{name: "03. it should return error if user not found."},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &FileServiceImpl{
+				files:         tt.fields.files,
+				userService:   &UserServiceImpl{users: tt.fields.users},
+				folderService: &FolderServiceImpl{folders: tt.fields.folders},
+			}
+			if err := service.Upload(tt.args.createdBy, tt.args.folderID, tt.args.filename, tt.args.desc); (err != nil) != tt.wantErr {
+				t.Errorf("FileServiceImpl.Upload() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

@@ -13,8 +13,8 @@ type File struct {
 	// FolderID is the ID of the folder that this file is under.
 	FolderID int
 
-	// Description of a folder is not a necessary field.
-	Description string
+	// Desc of a folder is not a necessary field.
+	Desc string
 
 	// CreatedAt is the time this file was created.
 	CreatedAt time.Time
