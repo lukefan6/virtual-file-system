@@ -3,6 +3,7 @@ package services
 import (
 	"reflect"
 	"testing"
+	"time"
 	"virtual-file-system/internal/models"
 )
 
@@ -114,6 +115,16 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 				t.Errorf("FolderServiceImpl.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
+			// Workaround for ignoring comparison for time.Time
+			if tt.want != nil {
+				tt.want.CreatedAt = time.Time{}
+			}
+
+			if got != nil {
+				got.CreatedAt = time.Time{}
+			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("FolderServiceImpl.Create() = %v, want %v", got, tt.want)
 			}
@@ -198,6 +209,181 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 			}
 			if err := service.Delete(tt.args.id, tt.args.deletedBy); (err != nil) != tt.wantErr {
 				t.Errorf("FolderServiceImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestFolderServiceImpl_GetAll(t *testing.T) {
+	type fields struct {
+		folders map[int]models.Folder
+		users   map[string]models.User
+		initKey int
+	}
+	type args struct {
+		username  string
+		sortBy    string
+		sortOrder string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []models.Folder
+		wantErr bool
+	}{
+		// TODO: Username is taken for the purpose of authentication.
+		// TODO: “Warning - empty folders”
+		{
+			name: "01. it should return all folders in the system without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{
+					1001: {Name: "Work", CreatedBy: "Luke"},
+					1002: {Name: "Testing", CreatedBy: "Mark"},
+				},
+				users: map[string]models.User{
+					"luke": {Name: "Luke"},
+					"mark": {Name: "Mark"},
+				},
+			},
+			args: args{
+				username: "Luke",
+			},
+			want: []models.Folder{
+				{Name: "Work", CreatedBy: "Luke"},
+				{Name: "Testing", CreatedBy: "Mark"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "02. it should return all folders order by name ascending without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{
+					1001: {Name: "Work", CreatedBy: "Luke"},
+					1002: {Name: "Testing", CreatedBy: "Mark"},
+				},
+				users: map[string]models.User{
+					"luke": {Name: "Luke"},
+					"mark": {Name: "Mark"},
+				},
+			},
+			args: args{
+				username:  "Luke",
+				sortBy:    "sort_name",
+				sortOrder: "asc",
+			},
+			want: []models.Folder{
+				{Name: "Testing", CreatedBy: "Mark"},
+				{Name: "Work", CreatedBy: "Luke"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "03. it should return all folders order by name descending without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{
+					1001: {Name: "Work", CreatedBy: "Luke"},
+					1002: {Name: "Testing", CreatedBy: "Mark"},
+				},
+				users: map[string]models.User{
+					"luke": {Name: "Luke"},
+					"mark": {Name: "Mark"},
+				},
+			},
+			args: args{
+				username:  "Luke",
+				sortBy:    "sort_name",
+				sortOrder: "dsc",
+			},
+			want: []models.Folder{
+				{Name: "Work", CreatedBy: "Luke"},
+				{Name: "Testing", CreatedBy: "Mark"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "04. it should return all folders order by created time in ascending order without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{
+					1001: {Name: "Work", CreatedBy: "Luke", CreatedAt: time.Date(2021, 2, 24, 0, 0, 0, 0, time.UTC)},
+					1002: {Name: "Testing", CreatedBy: "Mark", CreatedAt: time.Date(2021, 2, 26, 0, 0, 0, 0, time.UTC)},
+					1003: {Name: "Boss", CreatedBy: "April", CreatedAt: time.Date(2021, 2, 25, 0, 0, 0, 0, time.UTC)},
+				},
+				users: map[string]models.User{
+					"luke":  {Name: "Luke"},
+					"mark":  {Name: "Mark"},
+					"april": {Name: "April"},
+				},
+			},
+			args: args{
+				username:  "Luke",
+				sortBy:    "sort_time",
+				sortOrder: "asc",
+			},
+			want: []models.Folder{
+				{Name: "Work", CreatedBy: "Luke"},
+				{Name: "Boss", CreatedBy: "April"},
+				{Name: "Testing", CreatedBy: "Mark"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "05. it should return all folders order by created time in descending order without errors.",
+			fields: fields{
+				folders: map[int]models.Folder{
+					1001: {Name: "Work", CreatedBy: "Luke", CreatedAt: time.Date(2021, 2, 24, 0, 0, 0, 0, time.UTC)},
+					1002: {Name: "Testing", CreatedBy: "Mark", CreatedAt: time.Date(2021, 2, 26, 0, 0, 0, 0, time.UTC)},
+					1003: {Name: "Boss", CreatedBy: "April", CreatedAt: time.Date(2021, 2, 25, 0, 0, 0, 0, time.UTC)},
+				},
+				users: map[string]models.User{
+					"luke":  {Name: "Luke"},
+					"mark":  {Name: "Mark"},
+					"april": {Name: "April"},
+				},
+			},
+			args: args{
+				username:  "Luke",
+				sortBy:    "sort_time",
+				sortOrder: "dsc",
+			},
+			want: []models.Folder{
+				{Name: "Testing", CreatedBy: "Mark"},
+				{Name: "Boss", CreatedBy: "April"},
+				{Name: "Work", CreatedBy: "Luke"},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &FolderServiceImpl{
+				folders: tt.fields.folders,
+				userService: &UserServiceImpl{
+					users: tt.fields.users,
+				},
+				initKey: tt.fields.initKey,
+			}
+			got, err := service.GetAll(tt.args.username, tt.args.sortBy, tt.args.sortOrder)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FolderServiceImpl.GetAll() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			// Workaround for ignoring comparison for time.Time
+			if tt.want != nil {
+				for i := 0; i < len(tt.want); i++ {
+					tt.want[i].CreatedAt = time.Time{}
+				}
+			}
+
+			if got != nil {
+				for i := 0; i < len(got); i++ {
+					got[i].CreatedAt = time.Time{}
+				}
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FolderServiceImpl.GetAll() = %v, want %v", got, tt.want)
 			}
 		})
 	}

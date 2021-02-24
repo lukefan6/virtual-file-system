@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sort"
 	"strings"
+	"time"
 	"virtual-file-system/internal/models"
 )
 
@@ -19,11 +20,11 @@ type FolderService interface {
 	// If the given id does not match existing folders in the system, an error is returned.
 	Delete(id int, deletedBy string) error
 
-	// GetAll retrives all folders created by given user.
+	// GetAll retrives all folders in the system.
 	// If the sorting conditions were supplied, they will be applied as well.
 	// TODO Should empty folders consider an error? Currently it is not.
-	// If the given `deletedBy` does not match existing users in the system, an error is returned.
-	GetAll(createdBy string, orderBy string, sort string) ([]models.Folder, error)
+	// If the given `username` does not match existing users in the system, an error is returned.
+	GetAll(username string, sortBy string, sortOrder string) ([]models.Folder, error)
 
 	// Rename gives the folder with given id a new name.
 	// If the given `renamedBy` does not match existing users or the original owner, an error is returned.
@@ -63,6 +64,7 @@ func (service *FolderServiceImpl) Create(name string, createdBy string, desc str
 		Name:        name,
 		Description: desc,
 		CreatedBy:   createdBy,
+		CreatedAt:   time.Now(),
 		Files:       []models.File{},
 	}
 
@@ -93,12 +95,39 @@ func (service *FolderServiceImpl) Delete(id int, deletedBy string) error {
 	return nil
 }
 
-// GetAll retrives all folders created by given user.
+// GetAll retrives all folders in the system.
 // If the sorting conditions were supplied, they will be applied as well.
 // TODO Should empty folders consider an error? Currently it is not.
-// If the given `deletedBy` does not match existing users in the system, an error is returned.
-func (service *FolderServiceImpl) GetAll(createdBy string, orderBy string, sort string) ([]models.Folder, error) {
-	return []models.Folder{}, nil
+// If the given `username` does not match existing users in the system, an error is returned.
+func (service *FolderServiceImpl) GetAll(username string, sortBy string, sortOrder string) ([]models.Folder, error) {
+	folders := make([]models.Folder, 0, len(service.folders))
+	for _, value := range service.folders {
+		folders = append(folders, value)
+	}
+
+	if sortBy == "sort_name" {
+		sort.Slice(folders, func(i, j int) bool {
+			if sortOrder == "asc" {
+				return folders[i].Name < folders[j].Name
+			} else if sortOrder == "dsc" {
+				return folders[i].Name > folders[j].Name
+			} else {
+				return true
+			}
+		})
+	} else if sortBy == "sort_time" {
+		sort.Slice(folders, func(i, j int) bool {
+			if sortOrder == "asc" {
+				return folders[i].CreatedAt.Before(folders[j].CreatedAt)
+			} else if sortOrder == "dsc" {
+				return folders[i].CreatedAt.After(folders[j].CreatedAt)
+			} else {
+				return true
+			}
+		})
+	}
+
+	return folders, nil
 }
 
 // Rename gives the folder with given id a new name.
