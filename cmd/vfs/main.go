@@ -1,17 +1,31 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"virtual-file-system/internal/services"
+	"os"
+	"strings"
+	"virtual-file-system/internal/actions"
 )
 
 func main() {
-	userService := services.UserServiceImpl{}
-	err := userService.Register("Luke")
-	fmt.Println(err)
-	fmt.Println(userService)
+	scanner := bufio.NewScanner(os.Stdin)
 
-	err2 := userService.Register("Luke")
-	fmt.Println(err2)
-	fmt.Println(userService)
+	for fmt.Print("> "); scanner.Scan(); fmt.Print("> ") {
+		text := scanner.Text()
+		args := strings.Split(text, " ")
+		if len(args) == 0 {
+			break
+		}
+
+		f := &actions.Factory{}
+		if act := f.CreateAction(args); !act.Exec(args) {
+			break
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
 }
