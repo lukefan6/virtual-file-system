@@ -25,6 +25,18 @@ type FileServiceImpl struct {
 // Upload creates the file under the folder with given ID.
 // An error will be returned if the folder or the user is not found on the system.
 func (service *FileServiceImpl) Upload(createdBy string, folderID int, filename string, desc string) error {
+	if !service.userService.Exists(createdBy) {
+		return errors.New("authentication failed")
+	}
+
+	if !service.folderService.Exists(folderID) {
+		return errors.New("folder does not exist")
+	}
+
+	if _, exists := service.files[filename]; exists {
+		return errors.New("file already exists")
+	}
+
 	file := &models.File{
 		FolderID:  folderID,
 		Name:      filename,
@@ -40,6 +52,14 @@ func (service *FileServiceImpl) Upload(createdBy string, folderID int, filename 
 // Delete removes the specific file under the given folder.
 // An error will be returned if the folder or file or user is not found on the system.
 func (service *FileServiceImpl) Delete(deletedBy string, folderID int, filename string) error {
+	if !service.folderService.Exists(folderID) {
+		return errors.New("folder does not exist")
+	}
+
+	if _, exists := service.files[filename]; !exists {
+		return errors.New("file does not exist")
+	}
+
 	delete(service.files, filename)
 	return nil
 }

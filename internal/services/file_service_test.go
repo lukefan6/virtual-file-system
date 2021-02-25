@@ -364,9 +364,38 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{name: "02. it should return error if folder not found."},
-		{name: "03. it should return error if file not found."},
-		{name: "04. it should return error if user not found"},
+		{
+			name: "02. it should return error if folder not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
+			},
+			args: args{
+				deletedBy: "Luke",
+				folderID:  9999,
+				filename:  "1.tc",
+			},
+			wantErr: true,
+		},
+		{
+			name: "03. it should return error if file not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
+			},
+			args: args{
+				deletedBy: "Luke",
+				folderID:  1001,
+				filename:  "123.abc",
+			},
+			wantErr: true,
+		},
+		{
+			name:    "04. it should return error if user not found",
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -415,8 +444,51 @@ func TestFileServiceImpl_Upload(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{name: "02. it should return error if folder not found."},
-		{name: "03. it should return error if user not found."},
+		{
+			name: "02. it should return error if folder not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{},
+			},
+			args: args{
+				createdBy: "Luke",
+				folderID:  9999,
+				filename:  "1.tc",
+				desc:      "first test case for a company",
+			},
+			wantErr: true,
+		},
+		{
+			name: "03. it should return error if user not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{},
+			},
+			args: args{
+				createdBy: "mark",
+				folderID:  1001,
+				filename:  "1.tc",
+				desc:      "first test case for a company",
+			},
+			wantErr: true,
+		},
+		{
+			name: "04. it should return error if file already exist.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
+			},
+			args: args{
+				createdBy: "Luke",
+				folderID:  1001,
+				filename:  "1.tc",
+				desc:      "first test case for a company",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
