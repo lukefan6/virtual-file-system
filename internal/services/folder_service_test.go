@@ -387,3 +387,49 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		})
 	}
 }
+
+func TestFolderServiceImpl_Rename(t *testing.T) {
+	type fields struct {
+		folders map[int]models.Folder
+		users   map[string]models.User
+	}
+	type args struct {
+		id        int
+		name      string
+		renamedBy string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "01. it should rename folder without error.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+			},
+			args: args{
+				id:        1001,
+				name:      "Work2",
+				renamedBy: "Luke",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &FolderServiceImpl{
+				folders: tt.fields.folders,
+				userService: &UserServiceImpl{
+					users: tt.fields.users,
+				},
+				initKey: 1001,
+			}
+			if err := service.Rename(tt.args.id, tt.args.name, tt.args.renamedBy); (err != nil) != tt.wantErr {
+				t.Errorf("FolderServiceImpl.Rename() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
