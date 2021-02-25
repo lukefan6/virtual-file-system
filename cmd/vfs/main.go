@@ -14,10 +14,6 @@ func main() {
 	for fmt.Print("> "); scanner.Scan(); fmt.Print("> ") {
 		text := scanner.Text()
 		args := strings.Split(text, " ")
-		if len(args) == 0 {
-			break
-		}
-
 		f := &actions.Factory{}
 		if act := f.CreateAction(args); !act.Exec(args) {
 			break

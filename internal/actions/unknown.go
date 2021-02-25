@@ -2,11 +2,10 @@ package actions
 
 import "fmt"
 
-// Unknown implements Actions interface.
-type Unknown struct{}
+type unknown struct{}
 
-// Exec of Unknown does nothing and simply returns true to the caller.
-func (e *Unknown) Exec(args []string) bool {
+// Exec does nothing and simply returns true to the caller.
+func (act *unknown) Exec(args []string) bool {
 	fmt.Println("Unknown command: ", args)
 	return true
 }
