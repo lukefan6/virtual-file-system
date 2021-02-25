@@ -393,7 +393,17 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "04. it should return error if user not found",
+			name: "04. it should return error if user not found",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
+			},
+			args: args{
+				deletedBy: "mark",
+				folderID:  1001,
+				filename:  "1.tc",
+			},
 			wantErr: true,
 		},
 	}

@@ -52,6 +52,10 @@ func (service *FileServiceImpl) Upload(createdBy string, folderID int, filename 
 // Delete removes the specific file under the given folder.
 // An error will be returned if the folder or file or user is not found on the system.
 func (service *FileServiceImpl) Delete(deletedBy string, folderID int, filename string) error {
+	if !service.userService.Exists(deletedBy) {
+		return errors.New("authentication failed")
+	}
+
 	if !service.folderService.Exists(folderID) {
 		return errors.New("folder does not exist")
 	}
