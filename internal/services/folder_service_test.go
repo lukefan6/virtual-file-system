@@ -9,7 +9,7 @@ import (
 
 func TestFolderServiceImpl_Create(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 	}
 	type args struct {
@@ -29,7 +29,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 		{
 			name: "01. it should add new folder when given user exists while folder does not.",
 			fields: fields{
-				folders: map[int]models.Folder{},
+				folders: map[int]*models.Folder{},
 				users: map[string]models.User{
 					"luke": {Name: "Luke"},
 				},
@@ -50,7 +50,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 		{
 			name: "02. it should return error when given user does not exist.",
 			fields: fields{
-				folders: map[int]models.Folder{},
+				folders: map[int]*models.Folder{},
 				users: map[string]models.User{
 					"luke": {Name: "Luke"},
 				},
@@ -66,7 +66,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 		{
 			name: "03. it should return error when given folder name already exist.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work"},
 				},
 				users: map[string]models.User{
@@ -84,7 +84,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 		{
 			name: "04. it should return error when given folder name already exist using case-insensitive comparison.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work"},
 				},
 				users: map[string]models.User{
@@ -107,7 +107,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 				userService: &UserServiceImpl{
 					users: tt.fields.users,
 				},
-				initKey: 1001,
+				nextKey: 1001,
 			}
 			got, err := service.Create(tt.args.name, tt.args.createdBy, tt.args.desc)
 			if (err != nil) != tt.wantErr {
@@ -133,7 +133,7 @@ func TestFolderServiceImpl_Create(t *testing.T) {
 
 func TestFolderServiceImpl_Delete(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 	}
 	type args struct {
@@ -150,7 +150,7 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 		{
 			name: "01. it should delete existing folder without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 				},
 				users: map[string]models.User{
@@ -166,7 +166,7 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 		{
 			name: "02. it should return error if folder does not exist.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 				},
 				users: map[string]models.User{
@@ -182,7 +182,7 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 		{
 			name: "03. it should return error if folder owner does not match.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 				},
 				users: map[string]models.User{
@@ -204,7 +204,7 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 				userService: &UserServiceImpl{
 					users: tt.fields.users,
 				},
-				initKey: 1001,
+				nextKey: 1001,
 			}
 			if err := service.Delete(tt.args.id, tt.args.deletedBy); (err != nil) != tt.wantErr {
 				t.Errorf("FolderServiceImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
@@ -215,7 +215,7 @@ func TestFolderServiceImpl_Delete(t *testing.T) {
 
 func TestFolderServiceImpl_GetAll(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 		initKey int
 	}
@@ -236,7 +236,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "01. it should return all folders in the system without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -257,7 +257,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "02. it should return all folders order by name ascending without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -280,7 +280,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "03. it should return all folders order by name descending without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -303,7 +303,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "04. it should return all folders order by created time in ascending order without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke", CreatedAt: time.Date(2021, 2, 24, 0, 0, 0, 0, time.UTC)},
 					1002: {Name: "Testing", CreatedBy: "Mark", CreatedAt: time.Date(2021, 2, 26, 0, 0, 0, 0, time.UTC)},
 					1003: {Name: "Boss", CreatedBy: "April", CreatedAt: time.Date(2021, 2, 25, 0, 0, 0, 0, time.UTC)},
@@ -329,7 +329,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "05. it should return all folders order by created time in descending order without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke", CreatedAt: time.Date(2021, 2, 24, 0, 0, 0, 0, time.UTC)},
 					1002: {Name: "Testing", CreatedBy: "Mark", CreatedAt: time.Date(2021, 2, 26, 0, 0, 0, 0, time.UTC)},
 					1003: {Name: "Boss", CreatedBy: "April", CreatedAt: time.Date(2021, 2, 25, 0, 0, 0, 0, time.UTC)},
@@ -360,7 +360,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 				userService: &UserServiceImpl{
 					users: tt.fields.users,
 				},
-				initKey: tt.fields.initKey,
+				nextKey: tt.fields.initKey,
 			}
 			got, err := service.GetAll(tt.args.username, tt.args.sortBy, tt.args.sortOrder)
 			if (err != nil) != tt.wantErr {
@@ -390,7 +390,7 @@ func TestFolderServiceImpl_GetAll(t *testing.T) {
 
 func TestFolderServiceImpl_Rename(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 	}
 	type args struct {
@@ -407,7 +407,7 @@ func TestFolderServiceImpl_Rename(t *testing.T) {
 		{
 			name: "01. it should rename folder without error.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 			},
 			args: args{
@@ -420,7 +420,7 @@ func TestFolderServiceImpl_Rename(t *testing.T) {
 		{
 			name: "02. it should return error if folder not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 			},
 			args: args{
@@ -433,7 +433,7 @@ func TestFolderServiceImpl_Rename(t *testing.T) {
 		{
 			name: "03. it should return error if user not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 			},
 			args: args{
@@ -451,7 +451,7 @@ func TestFolderServiceImpl_Rename(t *testing.T) {
 				userService: &UserServiceImpl{
 					users: tt.fields.users,
 				},
-				initKey: 1001,
+				nextKey: 1001,
 			}
 			if err := service.Rename(tt.args.id, tt.args.name, tt.args.renamedBy); (err != nil) != tt.wantErr {
 				t.Errorf("FolderServiceImpl.Rename() error = %v, wantErr %v", err, tt.wantErr)

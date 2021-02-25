@@ -18,4 +18,7 @@ type File struct {
 
 	// CreatedAt is the time this file was created.
 	CreatedAt time.Time
+
+	// CreatedBy is the user that created this file.
+	CreatedBy string
 }

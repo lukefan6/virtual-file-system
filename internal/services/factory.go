@@ -6,6 +6,7 @@ import "virtual-file-system/internal/models"
 type Factory struct {
 	userService   UserService
 	folderService FolderService
+	fileService   FileService
 }
 
 var instance *Factory
@@ -34,11 +35,24 @@ func (f *Factory) GetUserService() UserService {
 func (f *Factory) GetFolderService() FolderService {
 	if f.folderService == nil {
 		f.folderService = &FolderServiceImpl{
-			folders:     make(map[int]models.Folder),
+			folders:     make(map[int]*models.Folder),
 			userService: f.GetUserService(),
-			initKey:     1001,
+			nextKey:     1001,
 		}
 	}
 
 	return f.folderService
+}
+
+// GetFileService returns an instance of FileService
+func (f *Factory) GetFileService() FileService {
+	if f.fileService == nil {
+		f.fileService = &FileServiceImpl{
+			files:         make(map[string]models.File),
+			userService:   f.GetUserService(),
+			folderService: f.GetFolderService(),
+		}
+	}
+
+	return f.fileService
 }

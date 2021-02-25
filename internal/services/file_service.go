@@ -4,6 +4,7 @@ import (
 	"errors"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 	"virtual-file-system/internal/models"
 )
@@ -40,9 +41,10 @@ func (service *FileServiceImpl) Upload(createdBy string, folderID int, filename 
 	file := &models.File{
 		FolderID:  folderID,
 		Name:      filename,
-		Ext:       filepath.Ext(filename),
+		Ext:       strings.TrimPrefix(filepath.Ext(filename), "."),
 		Desc:      desc,
 		CreatedAt: time.Now(),
+		CreatedBy: createdBy,
 	}
 
 	service.files[filename] = *file

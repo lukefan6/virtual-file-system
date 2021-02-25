@@ -12,7 +12,7 @@ import (
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	for fmt.Print("> "); scanner.Scan(); fmt.Print("> ") {
+	for fmt.Print("# "); scanner.Scan(); fmt.Print("# ") {
 		text := scanner.Text()
 		fmt.Println("$cmd:", text)
 

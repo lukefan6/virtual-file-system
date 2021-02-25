@@ -41,9 +41,9 @@ type FolderService interface {
 
 // FolderServiceImpl is the implementation of the FolderService interface
 type FolderServiceImpl struct {
-	folders     map[int]models.Folder
+	folders     map[int]*models.Folder
 	userService UserService
-	initKey     int
+	nextKey     int
 }
 
 // Create adds a folder to the system.
@@ -67,7 +67,8 @@ func (service *FolderServiceImpl) Create(name string, createdBy string, desc str
 		CreatedAt:   time.Now(),
 	}
 
-	service.folders[key] = *folder
+	service.folders[key] = folder
+	service.nextKey++
 
 	return folder, nil
 }
@@ -101,7 +102,7 @@ func (service *FolderServiceImpl) Delete(id int, deletedBy string) error {
 func (service *FolderServiceImpl) GetAll(username string, sortBy string, sortOrder string) ([]models.Folder, error) {
 	folders := make([]models.Folder, 0, len(service.folders))
 	for _, value := range service.folders {
-		folders = append(folders, value)
+		folders = append(folders, *value)
 	}
 
 	if sortBy == "sort_name" {
@@ -147,6 +148,7 @@ func (service *FolderServiceImpl) Rename(id int, name string, renamedBy string) 
 	}
 
 	f.Name = name
+
 	return nil
 }
 
@@ -165,13 +167,13 @@ func (service *FolderServiceImpl) Get(id int) (*models.Folder, error) {
 		return nil, errors.New("folder does not exist")
 	}
 
-	return &f, nil
+	return f, nil
 }
 
 func (service *FolderServiceImpl) makeNewKey() int {
 	size := len(service.folders)
 	if size == 0 {
-		return service.initKey
+		return service.nextKey
 	}
 
 	sortedKeys := service.getSortedKeys()

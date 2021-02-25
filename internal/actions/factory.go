@@ -20,8 +20,16 @@ func (f *Factory) CreateAction(args []string) Action {
 		return &createFolder{serviceFactory.GetFolderService()}
 	case "get_folders":
 		return &getFolders{serviceFactory.GetFolderService()}
+	case "rename_folder":
+		return &renameFolder{serviceFactory.GetFolderService()}
 	case "delete_folder":
 		return &deleteFolder{serviceFactory.GetFolderService()}
+	case "upload_file":
+		return &uploadFile{serviceFactory.GetFileService()}
+	case "delete_file":
+		return &deleteFile{serviceFactory.GetFileService()}
+	case "get_files":
+		return &getFiles{serviceFactory.GetFileService()}
 	case "exit":
 		return &exit{}
 	default:

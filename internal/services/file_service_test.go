@@ -9,7 +9,7 @@ import (
 
 func TestFileServiceImpl_GetAll(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 		files   map[string]models.File
 	}
@@ -29,7 +29,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "01. it should return all files under given folder with default ordering.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -55,7 +55,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "02. it should return all files under given folder sorted by name in ascending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -83,7 +83,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "03. it should return all files under given folder sorted by name in descending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -113,7 +113,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "04. it should return all files under given folder sorted by created time in ascending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -143,7 +143,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "05. it should return all files under given folder sorted by created time in descending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -175,7 +175,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "06. it should return all files under given folder sorted by extension in ascending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -207,7 +207,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "07. it should return all files under given folder sorted by extension in descending order.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -239,7 +239,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "08. it should return error if user does not exist.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -263,7 +263,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "09. it should return empty files without error.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -288,7 +288,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 		{
 			name: "10. it should return error when folder does not exist.",
 			fields: fields{
-				folders: map[int]models.Folder{
+				folders: map[int]*models.Folder{
 					1001: {Name: "Work", CreatedBy: "Luke"},
 					1002: {Name: "Testing", CreatedBy: "Mark"},
 				},
@@ -335,7 +335,7 @@ func TestFileServiceImpl_GetAll(t *testing.T) {
 
 func TestFileServiceImpl_Delete(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 		files   map[string]models.File
 	}
@@ -353,7 +353,7 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 		{
 			name: "01. it should delete file without error.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
 			},
@@ -367,7 +367,7 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 		{
 			name: "02. it should return error if folder not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
 			},
@@ -381,7 +381,7 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 		{
 			name: "03. it should return error if file not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
 			},
@@ -395,7 +395,7 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 		{
 			name: "04. it should return error if user not found",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
 			},
@@ -423,7 +423,7 @@ func TestFileServiceImpl_Delete(t *testing.T) {
 
 func TestFileServiceImpl_Upload(t *testing.T) {
 	type fields struct {
-		folders map[int]models.Folder
+		folders map[int]*models.Folder
 		users   map[string]models.User
 		files   map[string]models.File
 	}
@@ -442,7 +442,7 @@ func TestFileServiceImpl_Upload(t *testing.T) {
 		{
 			name: "01. it should upload file without errors.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{},
 			},
@@ -457,7 +457,7 @@ func TestFileServiceImpl_Upload(t *testing.T) {
 		{
 			name: "02. it should return error if folder not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{},
 			},
@@ -472,7 +472,7 @@ func TestFileServiceImpl_Upload(t *testing.T) {
 		{
 			name: "03. it should return error if user not found.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{},
 			},
@@ -487,7 +487,7 @@ func TestFileServiceImpl_Upload(t *testing.T) {
 		{
 			name: "04. it should return error if file already exist.",
 			fields: fields{
-				folders: map[int]models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
+				folders: map[int]*models.Folder{1001: {Name: "Work", CreatedBy: "Luke"}},
 				users:   map[string]models.User{"luke": {Name: "Luke"}},
 				files:   map[string]models.File{"1.tc": {Name: "1.tc", Ext: "tc", FolderID: 1001}},
 			},
