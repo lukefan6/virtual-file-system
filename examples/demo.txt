@@ -1,0 +1,4 @@
+register user1
+create_folder user1 'Work' 'The working files and necessary files are here'
+get_folders user1
+delete_folder user1 1001

@@ -18,6 +18,8 @@ func (f *Factory) CreateAction(args []string) Action {
 		return &register{serviceFactory.GetUserService()}
 	case "create_folder":
 		return &createFolder{serviceFactory.GetFolderService()}
+	case "get_folders":
+		return &getFolders{serviceFactory.GetFolderService()}
 	case "delete_folder":
 		return &deleteFolder{serviceFactory.GetFolderService()}
 	case "exit":

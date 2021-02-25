@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"virtual-file-system/internal/actions"
+
+	"github.com/google/shlex"
 )
 
 func main() {
@@ -13,7 +14,14 @@ func main() {
 
 	for fmt.Print("> "); scanner.Scan(); fmt.Print("> ") {
 		text := scanner.Text()
-		args := strings.Split(text, " ")
+		fmt.Println("$cmd:", text)
+
+		args, err := shlex.Split(text)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+
 		f := &actions.Factory{}
 		if act := f.CreateAction(args); !act.Exec(args) {
 			break
