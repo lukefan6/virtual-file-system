@@ -417,6 +417,32 @@ func TestFolderServiceImpl_Rename(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "02. it should return error if folder not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+			},
+			args: args{
+				id:        1002,
+				name:      "Work2",
+				renamedBy: "Luke",
+			},
+			wantErr: true,
+		},
+		{
+			name: "03. it should return error if user not found.",
+			fields: fields{
+				folders: map[int]models.Folder{1001: {Name: "Work"}},
+				users:   map[string]models.User{"luke": {Name: "Luke"}},
+			},
+			args: args{
+				id:        1001,
+				name:      "Work2",
+				renamedBy: "Mark",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

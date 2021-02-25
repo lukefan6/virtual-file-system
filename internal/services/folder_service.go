@@ -137,7 +137,15 @@ func (service *FolderServiceImpl) GetAll(username string, sortBy string, sortOrd
 // If the given `renamedBy` does not match existing users or the original owner, an error is returned.
 // If the given id does not match existing folders in the system, an error is returned.
 func (service *FolderServiceImpl) Rename(id int, name string, renamedBy string) error {
-	f, _ := service.Get(id)
+	if !service.userService.Exists(renamedBy) {
+		return errors.New("user does not exist")
+	}
+
+	f, err := service.Get(id)
+	if err != nil {
+		return err
+	}
+
 	f.Name = name
 	return nil
 }
